@@ -13,17 +13,34 @@ class NewVisitorTest(unittest.TestCase):
     # the user opens the new to-do web app URL in his broweser
     self.browser.get('http://localhost:8000')
 
-    # he notices the title of the application
+    # She notices the page title and header mention to-do lists
     self.assertIn('To-Do', self.browser.title)
-    self.fail('Finish the test')
+    header_text = self.browser.find_element_by_tag_name('h1').text
+    self.assertIn('To-Do', header_text)
 
-    # the user is invited to enter to-do's - a form accepting a text box?
+    # She is invited to enter a to-do item straight away
+    inputbox = self.browser.find_element_by_id('id_new_item')
+    self.assertEqual(
+        inputbox.get_attribute('placeholder'),
+        'Enter a to-do item'
+    )
 
-    # the user enters "buy peaches" in the text box
+    # She types "Buy peacock feathers" into a text box (Edith's hobby        
+    # is tying fly-fishing lures)
+    inputbox.send_keys('Buy peacock feathers')
 
-    # the user presses enter and the page is updated, and now there is a list with 
-    # an entry "1: buy peaches"
+    # When she hits enter, the page updates, and now the page lists
+    # "1: Buy peacock feathers" as an item in a to-do list table
+    inputbox.send_keys(Keys.ENTER)
 
+    table = self.browser.find_element_by_id('id_list_table')
+    rows = table.find_element_by_tag_name('tr')
+    self.assertTrue(
+        any(row.text == '1: Buy peacock feathers' for row in rows)
+    )
+
+
+    self.fail("COMPLETE THE TEST CODING")
     # there is still a text box to enter more to-do's tasks
 
     # the user enters: "go hang yourself!"
