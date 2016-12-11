@@ -50,7 +50,7 @@ class NewVisitorTest(unittest.TestCase):
 
     # The page updates again, and now shows both items on her list
     self.check_list_table_contains_row_text('1: Buy peacock feathers')
-    self.check_list_table_contains_row_text('1: Use peacock feathers to make a fly')
+    self.check_list_table_contains_row_text('2: Use peacock feathers to make a fly')
 
 
     self.fail("COMPLETE THE TEST CODING")
