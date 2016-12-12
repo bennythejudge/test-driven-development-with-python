@@ -39,7 +39,8 @@ class NewVisitorTest(LiveServerTestCase):
     # When she hits enter, the page updates, and now the page lists
     # "1: Buy peacock feathers" as an item in a to-do list table
     inputbox.send_keys(Keys.ENTER)
-
+    edith_list_url = self.browser.current_url
+    self.assertRegex(edith_list_url, '/list/.+')
     self.check_list_table_contains_row_text('1: Buy peacock feathers')
 
     # There is still a text box inviting her to add another item. She
@@ -53,18 +54,32 @@ class NewVisitorTest(LiveServerTestCase):
     self.check_list_table_contains_row_text('1: Buy peacock feathers')
     self.check_list_table_contains_row_text('2: Use peacock feathers to make a fly')
 
+    # Now a new user (Francis) comes along to the website
 
-    self.fail("COMPLETE THE TEST CODING")
+    ## we use a new browser session to make sure that Edit's data
+    ## is not coming via cookies
+    self.browser.quit()
+    self.browser.webdriver.Firefox()
 
+    # Francis visits the home page. There is no sign of Edith's list
+    self.browser.get(self.live_server_url)
+    page_text = self.browser.find_element_by_tag_name('body').text
+    self.assertNotIn('Buy peacock feathers', page_text)
+    self.assertNotIn('make a fly', page_text)
 
+    # Francis starts a new list by entering an item
+    inputbox = self.browser.find_element_by_id('id_new_item')
+    inputbox.send_keys('Buy milk')
+    inputbox.send_keys(Keys.ENTER)
 
-    # Edith wonders whether the site will remember her list. Then she sees
-    # that the site has generated a unique URL for her -- there is some
-    # explanatory text to that effect.
+    # Francis gets his own unique URL
+    francis_list_url = self.broweser.current_url
+    self.assertRegex(francis_list_url, '/list/.+')
+    self.assertNotEqual(francis_list_url, edith_list_url)
 
+    # Again there is no trace of Edith's lists
+    page_text = self.browser.find_element_by_tag_name('body').text
+    self.assertNotIn('Buy peacock feathers', page_text)
+    self.assertIn('Buy milk', page_text)
 
-    # the page also contains a unique URL generated which allows this user to retrieve
-    # his list
-    # this is explained in the page with some static text
-
-    # the user checks that URL and checks that it contains his to-do list so far
+    # Satisfied both Francis and Edith go back to sleep
